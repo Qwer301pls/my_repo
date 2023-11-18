@@ -1,44 +1,25 @@
 include("sample2.jl")
 r = Robot("untitled.sit",animate = true)
 function around!(r::Robot,side::HorizonSide)
+    positions = []
+    coord = [0,0]
     sd1 = next(side)
     sd2 = previous(side)
-    positions = []
     chosen = side
     possible = previous(chosen)
-    coord = [0,0]
-    left = 0
-    right = 0
     s = 0
     i = 2
     t = 0
-    if !isborder(r,chosen)
-        chosen = next(chosen)
-        possible = next(possible)
-        right+=1
-    end
-    while isborder(r,possible)
-        chosen = previous(chosen)
-        possible = previous(possible)
-        left+=1
-    end
+    rotation = rotate(r,chosen,possible)
+    chosen = rotation[1]
+    possible = rotation[2]
     firstside = possible
-    println(firstside,coord)
     while !(t==1 && coord[1]==0 && coord[2]==0 && possible==firstside)
         t = 1
         putmarker!(r)
-        if possible==Nord
-            coord[2]+=1
-        end
-        if possible==Sud
-            coord[2]-=1
-        end
-        if possible==Ost
-            coord[1]+=1
-        end
-        if possible==West
-            coord[1]-=1
-        end
+        coordu = coordupdate(possible,coord[1],coord[2])
+        coord[1] = coordu[1]
+        coord[2] = coordu[2]
         movestep!(r,possible)
         if (isborder(r,sd1)||isborder(r,sd2)) && !ismarker(r)
             c = wallsp(r)
@@ -60,26 +41,16 @@ function around!(r::Robot,side::HorizonSide)
                 push!(positions,[coord[1],coord[2]])
             end
         end
-        if !isborder(r,chosen)
-            chosen = next(chosen)
-            possible = next(possible)
-            right+=1
-        end
-        while isborder(r,possible)
-            chosen = previous(chosen)
-            possible = previous(possible)
-            left+=1
-        end
-        #println(possible,coord)
+        rotation = rotate(r,chosen,possible)
+        chosen = rotation[1]
+        possible = rotation[2]
     end 
     if (isborder(r,sd1)||isborder(r,sd2))
         push!(positions,[0,0])
     end
     positions = sort!(positions)
-    println(positions)
     while i < length(positions)+1
         s += abs(positions[Int(i)][2]-positions[Int(i)-1][2])-1
-        println(positions[Int(i)][2]," ",positions[Int(i)-1][2]," ",abs(positions[Int(i)][2]-positions[Int(i)-1][2])-1)
         i+=2
     end
     println(s)

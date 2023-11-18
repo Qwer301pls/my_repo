@@ -1,43 +1,36 @@
-include("../sample2.jl")
+include("sample2.jl")
 r = Robot("untitled.sit",animate = true)
 function around!(r::Robot,side::HorizonSide)
+    positions = []
+    coord = [0,0]
     chosen = side
     possible = previous(chosen)
-    firstside = possible
-    coord = [0,0]
     left = 0
-    right = 0
-    while !(ismarker(r) && coord[1]==0 && coord[2]==0 && possible==firstside)
-        if !isborder(r,chosen)
-            chosen = next(chosen)
-            possible = next(possible)
-            right+=1
-        end
-        while isborder(r,possible)
-            chosen = previous(chosen)
-            possible = previous(possible)
-            left+=1
-        end
+    rigth = 0
+    s = 0
+    i = 2
+    t = 0
+    rotation = rotate(r,chosen,possible)
+    chosen = rotation[1]
+    possible = rotation[2]
+    firstside = possible
+    while !(t==1 && coord[1]==0 && coord[2]==0 && possible==firstside)
+        t = 1
         putmarker!(r)
-        if possible==Nord
-            coord[2]+=1
-        end
-        if possible==Sud
-            coord[2]-=1
-        end
-        if possible==Ost
-            coord[1]+=1
-        end
-        if possible==West
-            coord[1]-=1
-        end 
+        coordu = coordupdate(possible,coord[1],coord[2])
+        coord[1] = coordu[1]
+        coord[2] = coordu[2]
         movestep!(r,possible)
-    end
-    
-    if left>right
-        println("внутри")
-    else
+        rotation = rotate(r,chosen,possible)
+        chosen = rotation[1]
+        possible = rotation[2]
+        left = rotation[3]
+        rigth = rotation[4]
+    end 
+    if rigth<left
         println("снаружи")
+    else
+        println("внутри")
     end
 end
 around!(r,Nord)

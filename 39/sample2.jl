@@ -77,6 +77,49 @@ function listinverse!(n::Array)
     return p
 end
 
+function wallsp(r::Robot)
+    c = 0
+    sd = 0
+    for side in [Nord,West,Ost,Sud]
+        if isborder(r,side)
+            c+=1
+        else
+            sd = side
+        end
+    end
+    return [c,sd]
+end
+
+function rotate(r,chosen::HorizonSide,possible::HorizonSide,left::Int = 0,right::Int = 0)
+    if !isborder(r,chosen)
+        chosen = next(chosen)
+        possible = next(possible)
+        right+=1
+    end
+    while isborder(r,possible)
+        chosen = previous(chosen)
+        possible = previous(possible)
+        left+=1
+    end
+    return [chosen,possible,left,right]
+end
+
+function coordupdate(possible::HorizonSide,coord1::Int,coord2::Int)
+    if possible==Nord
+        coord2+=1
+    end
+    if possible==Sud
+        coord2-=1
+    end
+    if possible==Ost
+        coord1+=1
+    end
+    if possible==West
+        coord1-=1
+    end
+    return [coord1,coord2]
+end
+
 function iswall!(r,side::HorizonSide)
     t = 1
     window = 0

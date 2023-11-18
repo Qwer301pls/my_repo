@@ -193,8 +193,6 @@ function creepwalk!(r,side::HorizonSide,way::Bool)
     end
 end
 
-
-
 #когда есть сколько точно надо
 function countdonesteps!(r,need::Int,side::HorizonSide)
     canNeed = 0

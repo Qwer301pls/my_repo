@@ -77,6 +77,19 @@ function listinverse!(n::Array)
     return p
 end
 
+function wallsp(r::Robot)
+    c = 0
+    sd = 0
+    for side in [Nord,West,Ost,Sud]
+        if isborder(r,side)
+            c+=1
+        else
+            sd = side
+        end
+    end
+    return [c,sd]
+end
+
 function iswall!(r,side::HorizonSide)
     t = 1
     window = 0
